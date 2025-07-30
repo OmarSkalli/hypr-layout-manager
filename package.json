@@ -1,0 +1,12 @@
+{
+  "name": "hyprland-layout-manager",
+  "version": "1.0.0",
+  "description": "Simple layout manager for hyprland.",
+  "license": "MIT",
+  "author": "Omar Skalli",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "run": "node index.js"
+  }
+}
