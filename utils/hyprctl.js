@@ -28,7 +28,7 @@ function isHyprctlAvailable() {
   try {
     execSync("hyprctl version", { stdio: "ignore" });
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

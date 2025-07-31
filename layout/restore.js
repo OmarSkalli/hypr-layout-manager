@@ -176,13 +176,14 @@ const restoreLayout = async (workspaceId, configurationName) => {
   for (const step of layoutDefinition.applySequence) {
     logger.verbose(`Executing step: ${JSON.stringify(step)}`);
     switch (step.action) {
-      case STEP_OPEN:
+      case STEP_OPEN: {
         let client = configuration.clients[step.client];
         let address = await launchApplication(client, workspaceId);
         clientAddresses[step.client] = address;
         break;
+      }
 
-      case STEP_MOVE_FOCUS:
+      case STEP_MOVE_FOCUS: {
         let clientAddress = clientAddresses[step.client];
         if (!clientAddress) {
           logger.error(`  Failed to move focus to client (missing address).`);
@@ -190,11 +191,13 @@ const restoreLayout = async (workspaceId, configurationName) => {
         }
         hyprctl.focusWindow(clientAddress);
         break;
+      }
 
-      case STEP_RESIZE_WINDOW:
+      case STEP_RESIZE_WINDOW: {
         const dimension = configuration.dimensions[step.dimension];
         resizeActiveClient(dimension);
         break;
+      }
 
       case STEP_TOGGLE_SPLIT:
         hyprctl.togglesplit();
