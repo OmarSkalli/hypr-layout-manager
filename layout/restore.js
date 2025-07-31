@@ -21,6 +21,7 @@ import { getLayoutDefinition } from "./registry.js";
 import { loadConfiguration } from "../utils/config.js";
 import { launchClientApp } from "../utils/launcher.js";
 import logger from "./../utils/logger.js";
+import { execSync } from "child_process";
 
 const STEP_OPEN = "open";
 const STEP_MOVE_FOCUS = "movefocus";
@@ -114,6 +115,37 @@ const launchApplication = async (client, workspaceId) => {
   }
 };
 
+function getTerminalClient(workspaceId) {
+  const workspaceClients = hyprctl.getClientsOnWorkspace(workspaceId);
+  const clientPids = new Set(
+    workspaceClients.map((client) => parseInt(client.pid))
+  );
+
+  let pid = process.pid;
+  while (pid > 1) {
+    if (clientPids.has(pid)) {
+      return workspaceClients.find((client) => parseInt(client.pid) === pid);
+    }
+
+    const result = execSync(`ps -o ppid= -p ${pid}`, { encoding: "utf8" });
+    pid = parseInt(result.trim());
+  }
+  return null;
+}
+
+function resizeAndFloatTerminal(terminalAddress) {
+  hyprctl.setFloating(terminalAddress);
+
+  const monitorDimensions = hyprctl.getMonitorDimensions();
+  const width = Math.floor(monitorDimensions.width * 0.25);
+  const height = Math.floor(monitorDimensions.height * 0.5);
+
+  logger.verbose(`Resizing and centering terminal: ${width} x ${height}`);
+
+  hyprctl.resizeWindow(terminalAddress, `exact ${width} ${height}`);
+  hyprctl.centerWindow(terminalAddress);
+}
+
 const restoreLayout = async (workspaceId, configurationName) => {
   const configuration = loadConfiguration(configurationName);
   const layoutDefinition = getLayoutDefinition(configuration.layout);
@@ -122,7 +154,21 @@ const restoreLayout = async (workspaceId, configurationName) => {
     `Restoring "${configurationName}" configuration to workspace ${workspaceId}.`
   );
 
-  hyprctl.switchToWorkspace(workspaceId);
+  // If the script is invoked from the target layout, we can't close the terminal running
+  // the script, or we'll end up killing this script. To get around it, let's float the
+  // terminal window and kill it at the very end.
+
+  const terminalClient = getTerminalClient(workspaceId);
+  if (terminalClient) {
+    logger.verbose(`Found terminal client address: ${terminalClient.address}`);
+    resizeAndFloatTerminal(terminalClient.address);
+  }
+
+  const currentWorkspaceId = hyprctl.getCurrentWorkspace();
+  if (currentWorkspaceId !== workspaceId) {
+    hyprctl.switchToWorkspace(workspaceId);
+  }
+
   closeWorkspaceClients(workspaceId);
 
   const clientAddresses = {};
@@ -159,6 +205,10 @@ const restoreLayout = async (workspaceId, configurationName) => {
         process.exit(1);
         break;
     }
+  }
+
+  if (terminalClient) {
+    hyprctl.closeClient(terminalClient.address);
   }
 };
 

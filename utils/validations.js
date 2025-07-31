@@ -4,7 +4,6 @@ import {
   getAvailableConfigurations,
 } from "./config.js";
 import { getLayoutDefinition } from "../layout/registry.js";
-import hyprctl from "./hyprctl.js";
 import logger from "./logger.js";
 
 function isValidInteger(value) {
@@ -25,18 +24,6 @@ const validateRestoretInputs = (workspaceId, configuration) => {
   // Check if target layout is valid (e.g. number between 1 and 10)
   if (!isValidInteger(workspaceId)) {
     logger.error("Invalid workspace number. It must be between 1 and 10.");
-    process.exit(1);
-  }
-
-  // Ensure the target layout is not current layout:
-  // Because we close all clients within a layout before resetting the layout, this would end up
-  // killing the process managing the layout. In the future, maybe we can make the terminal floating
-  // until the new layout is complete, then kill the app?
-  const currentWorkspaceId = hyprctl.getCurrentWorkspace();
-  if (currentWorkspaceId === parseInt(workspaceId)) {
-    logger.error(
-      `It's not currently supported to load a layout in the current workspace.`
-    );
     process.exit(1);
   }
 

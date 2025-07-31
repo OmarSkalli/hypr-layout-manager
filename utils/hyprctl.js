@@ -1,4 +1,7 @@
 // Wrapper around the hyprctl command-line utility to interact with the Hyprland compositor.
+//
+// List of dispatched: https://wiki.hypr.land/Configuring/Dispatchers/
+//
 
 import { execSync } from "child_process";
 import logger from "./logger.js";
@@ -15,7 +18,8 @@ function executeHyprctl(command) {
     const json = JSON.parse(result);
     return json;
   } catch (error) {
-    logger.error(`Error executing hyprctl ${command}:`, error.message);
+    logger.error(`Error executing hyprctl ${command}:`);
+    logger.error(error);
     process.exit(1);
   }
 }
@@ -81,6 +85,10 @@ function togglesplit() {
   executeHyprctl("dispatch togglesplit");
 }
 
+function setFloating(clientAddress) {
+  executeHyprctl(`dispatch setfloating address:${clientAddress}`);
+}
+
 function swapfocus() {
   executeHyprctl(`dispatch cyclenext`);
 }
@@ -96,6 +104,14 @@ function resizeActiveWindow(dx = 0, dy = 0) {
   executeHyprctl(`dispatch resizeactive ${dx} ${dy}`);
 }
 
+function resizeWindow(address, dimensions) {
+  executeHyprctl(`dispatch resizeactive ${dimensions} address:${address}`);
+}
+
+function centerWindow(address) {
+  executeHyprctl(`dispatch centerwindow address:${address}`);
+}
+
 export default {
   closeClient,
   executeHyprctl,
@@ -108,5 +124,8 @@ export default {
   focusWindow,
   swapfocus,
   togglesplit,
+  setFloating,
   resizeActiveWindow,
+  resizeWindow,
+  centerWindow,
 };

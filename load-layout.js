@@ -17,11 +17,11 @@ const HELP_TEXT = `Hyprland Layout Manager
 
 Usage:
   node load-layout.js [options]
-  node load-layout.js <configuration> <workspaceId> [options]
+  node load-layout.js <configuration> [workspaceId] [options]
 
 Arguments (optional):
   configuration    Name of the configuration file (without .json extension)
-  workspaceId      Target workspace number (1-10)
+  workspaceId      Target workspace number (1-10). Defaults to current workspace if not provided.
 
   If not provided, interactive prompts will guide you through the selection.
 
@@ -31,6 +31,7 @@ Options:
 
 Examples:
   node load-layout.js                    # Interactive mode
+  node load-layout.js dev                # Load 'dev' config to current workspace
   node load-layout.js dev 2              # Load 'dev' config to workspace 2
   node load-layout.js dev 2 --verbose    # With detailed logging
 
@@ -50,12 +51,14 @@ if (!hyprctl.isHyprctlAvailable()) {
 
 // Get Load layout parameters
 const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
+const currentWorkspace = hyprctl.getCurrentWorkspace();
+
 let configuration = null;
 let workspaceId = null;
 
-if (positionalArgs.length === 2) {
+if (positionalArgs.length > 0) {
   configuration = process.argv[2];
-  workspaceId = process.argv[3];
+  workspaceId = process.argv[3] || currentWorkspace;
 } else {
   configuration = await select({
     message: "Enter layout to load:",
@@ -63,13 +66,19 @@ if (positionalArgs.length === 2) {
   });
 
   workspaceId = await input({
-    message: "Enter target workspace (1-10):",
-    validate: (value) =>
-      isValidInteger(value) && parseInt(value) >= 1 && parseInt(value) <= 10,
+    message: `Enter target workspace (1-10):`,
+    default: currentWorkspace,
+    validate: (value) => {
+      if (!value) return true; // Allow empty/default
+      return (
+        isValidInteger(value) && parseInt(value) >= 1 && parseInt(value) <= 10
+      );
+    },
   });
 }
 
 // Validate parameters
+workspaceId = parseInt(workspaceId);
 validateRestoretInputs(workspaceId, configuration);
 
 // Restore the layout
