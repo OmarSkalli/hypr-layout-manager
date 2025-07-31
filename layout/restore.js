@@ -25,6 +25,12 @@ const STEP_OPEN = "open";
 const STEP_MOVE_FOCUS = "movefocus";
 const STEP_RESIZE_WINDOW = "resizewindow";
 const STEP_TOGGLE_SPLIT = "togglesplit";
+const SEQUENCE_STEPS = [
+  STEP_OPEN,
+  STEP_MOVE_FOCUS,
+  STEP_RESIZE_WINDOW,
+  STEP_TOGGLE_SPLIT,
+];
 
 const closeWorkspaceClients = async (workspaceId) => {
   const clients = hyprctl.getClientsOnWorkspace(workspaceId);
@@ -155,4 +161,4 @@ const restoreLayout = async (workspaceId, configurationName) => {
   }
 };
 
-export { restoreLayout };
+export { SEQUENCE_STEPS, restoreLayout };

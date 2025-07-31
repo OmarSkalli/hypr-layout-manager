@@ -1,5 +1,5 @@
 export default {
-  name: "main-left-stack-right",
+  name: "3-main-left-stack-right",
   clientCount: 3,
   ascii: [
     "┌─────────────┬───┐",

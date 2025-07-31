@@ -9,4 +9,4 @@ const layoutByName = Object.fromEntries(
 
 const getLayoutDefinition = (name) => layoutByName[name];
 
-export { getLayoutDefinition };
+export { availableLayouts, getLayoutDefinition };
