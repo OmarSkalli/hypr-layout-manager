@@ -16,16 +16,7 @@
 //
 
 import { waitFor } from "../utils/async.js";
-import {
-  switchToWorkspace,
-  getClientsOnWorkspace,
-  closeClient,
-  togglesplit,
-  focusWindow,
-  getMonitorDimensions,
-  getCurrentWindowDimensions,
-  resizeActiveWindow,
-} from "../utils/hyprctl.js";
+import hyprctl from "../utils/hyprctl.js";
 import { getLayoutDefinition } from "./registry.js";
 import { loadConfiguration } from "../utils/config.js";
 import { launchClientApp } from "../utils/launcher.js";
@@ -36,7 +27,7 @@ const STEP_RESIZE_WINDOW = "resizewindow";
 const STEP_TOGGLE_SPLIT = "togglesplit";
 
 const closeWorkspaceClients = async (workspaceId) => {
-  const clients = getClientsOnWorkspace(workspaceId);
+  const clients = hyprctl.getClientsOnWorkspace(workspaceId);
 
   if (clients.length > 0) {
     console.log(
@@ -44,11 +35,11 @@ const closeWorkspaceClients = async (workspaceId) => {
     );
 
     // Issue command to close clients
-    clients.forEach((client) => closeClient(client.address));
+    clients.forEach((client) => hyprctl.closeClient(client.address));
 
     // Wait until they're all closed
     const success = await waitFor(
-      () => getClientsOnWorkspace(workspaceId).length === 0
+      () => hyprctl.getClientsOnWorkspace(workspaceId).length === 0
     );
 
     if (!success) {
@@ -65,8 +56,8 @@ const resizeActiveClient = (dimension) => {
     process.exit(1);
   }
 
-  const monitorDimensions = getMonitorDimensions();
-  const currentWindow = getCurrentWindowDimensions();
+  const monitorDimensions = hyprctl.getMonitorDimensions();
+  const currentWindow = hyprctl.getCurrentWindowDimensions();
   let dx = 0;
   let dy = 0;
 
@@ -80,12 +71,12 @@ const resizeActiveClient = (dimension) => {
     dy = targetHeight - currentWindow.height;
   }
 
-  resizeActiveWindow(dx, dy);
+  hyprctl.resizeActiveWindow(dx, dy);
 };
 
 const launchApplication = async (client, workspaceId) => {
   const initialAddresses = new Set(
-    getClientsOnWorkspace(workspaceId).map((client) => client.address)
+    hyprctl.getClientsOnWorkspace(workspaceId).map((client) => client.address)
   );
 
   launchClientApp(client);
@@ -96,7 +87,7 @@ const launchApplication = async (client, workspaceId) => {
   let newAddress = null;
 
   const success = await waitFor(() => {
-    const clients = getClientsOnWorkspace(workspaceId);
+    const clients = hyprctl.getClientsOnWorkspace(workspaceId);
     return clients.some((client) => {
       if (!initialAddresses.has(client.address)) {
         console.log(`  -> Client address detected: ${client.address}`);
@@ -124,7 +115,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
     `Restoring "${configurationName}" configuration to workspace ${workspaceId}.`
   );
 
-  switchToWorkspace(workspaceId);
+  hyprctl.switchToWorkspace(workspaceId);
   closeWorkspaceClients(workspaceId);
 
   const clientAddresses = {};
@@ -144,7 +135,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
           console.error(`  Failed to move focus to client (missing address).`);
           process.exit(1);
         }
-        focusWindow(clientAddress);
+        hyprctl.focusWindow(clientAddress);
         break;
 
       case STEP_RESIZE_WINDOW:
@@ -153,7 +144,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
         break;
 
       case STEP_TOGGLE_SPLIT:
-        togglesplit();
+        hyprctl.togglesplit();
         break;
 
       default:

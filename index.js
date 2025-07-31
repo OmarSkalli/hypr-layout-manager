@@ -1,9 +1,9 @@
-import { isHyprctlAvailable } from "./utils/hyprctl.js";
+import hyprctl from "./utils/hyprctl.js";
 import { restoreLayout } from "./layout/restore.js";
 import { validateRestoretInputs } from "./utils/validations.js";
 
 // Check if hyprctl is available
-if (!isHyprctlAvailable()) {
+if (!hyprctl.isHyprctlAvailable()) {
   console.error("hyprctl must be present to use the layout manager.");
   process.exit(1);
 }

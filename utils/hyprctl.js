@@ -95,7 +95,7 @@ function resizeActiveWindow(dx = 0, dy = 0) {
   executeHyprctl(`dispatch resizeactive ${dx} ${dy}`);
 }
 
-export {
+export default {
   closeClient,
   executeHyprctl,
   switchToWorkspace,
