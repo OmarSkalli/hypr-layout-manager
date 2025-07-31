@@ -108,6 +108,15 @@ function centerWindow(address) {
   executeHyprctl(`dispatch centerwindow address:${address}`);
 }
 
+function getCurrentLayout() {
+  const layoutOption = executeHyprctl("getoption general:layout");
+  return layoutOption.str;
+}
+
+function isDwindleLayout() {
+  return getCurrentLayout() === "dwindle";
+}
+
 export default {
   closeClient,
   executeHyprctl,
@@ -123,4 +132,5 @@ export default {
   resizeActiveWindow,
   resizeWindow,
   centerWindow,
+  isDwindleLayout,
 };

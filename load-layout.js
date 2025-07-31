@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import hyprctl from "./utils/hyprctl.js";
 import { restoreLayout } from "./layout/restore.js";
 import { validateRestoretInputs, isValidInteger } from "./utils/validations.js";
@@ -16,8 +18,8 @@ if (args.includes("--verbose") || args.includes("-v")) {
 const HELP_TEXT = `Hyprland Layout Manager
 
 Usage:
-  node load-layout.js [options]
-  node load-layout.js <configuration> [workspaceId] [options]
+  hyprland-load-layout [options]
+  hyprland-load-layout <configuration> [workspaceId] [options]
 
 Arguments (optional):
   configuration    Name of the configuration file (without .json extension)
@@ -43,9 +45,14 @@ if (args.includes("--help") || args.includes("-h")) {
   process.exit(0);
 }
 
-// Check if hyprctl is available
+// Check if hyprctl is available and using Dwindle layout
 if (!hyprctl.isHyprctlAvailable()) {
   logger.error("hyprctl must be present to use the layout manager.");
+  process.exit(1);
+}
+
+if (!hyprctl.isDwindleLayout()) {
+  logger.error("This layout manager only works for Dwindle layout.");
   process.exit(1);
 }
 

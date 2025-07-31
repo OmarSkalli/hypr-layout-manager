@@ -6,16 +6,38 @@ A simple layout manager for Hyprland that allows you to define and restore windo
 
 The manager assumes you are using a dwindle layout. Also, it currently only supports single monitor setup.
 
+## Installation
+
+Install globally:
+
+```bash
+npm install -g .
+```
+
 ## Usage
 
 ```bash
-node load-layout.js <configuration> <workspaceId>
+hyprland-load-layout [configuration] [workspaceId]
 ```
 
 - `configuration`: Name of the configuration file (without .json extension)
-- `workspaceId`: Target workspace number (1-10)
+- `workspaceId` (optional): Target workspace number (1-10). Defaults to current workspace if not provided.
+
+If no params are provided, interactive prompts will guide you through the selection.
 
 Example:
+
+```bash
+hyprland-load-layout dev
+```
+
+Or run interactively:
+
+```bash
+hyprland-load-layout
+```
+
+For development, you can also run directly:
 
 ```bash
 node load-layout.js dev 2

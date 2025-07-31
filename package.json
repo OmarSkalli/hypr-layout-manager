@@ -6,6 +6,9 @@
   "author": "Omar Skalli",
   "type": "module",
   "main": "load-layout.js",
+  "bin": {
+    "hyprland-load-layout": "./load-layout.js"
+  },
   "scripts": {
     "load-layout": "node load-layout.js",
     "test": "vitest",
