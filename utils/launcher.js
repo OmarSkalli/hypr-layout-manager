@@ -1,7 +1,8 @@
 import { spawn } from "child_process";
+import logger from "./logger.js";
 
 const launchApp = (command) => {
-  console.log(`  -> Opening application: ${command}`);
+  logger.verbose(`  -> Opening application: ${command}`);
   const child = spawn("sh", ["-c", command], {
     detached: true,
     stdio: "ignore",
@@ -11,7 +12,7 @@ const launchApp = (command) => {
 };
 
 const launchWebapp = (url) => {
-  console.log(`  -> Opening web application: ${url}`);
+  logger.verbose(`  -> Opening web application: ${url}`);
   const args = [
     "app",
     "--",
@@ -35,7 +36,7 @@ const launchClientApp = (client) => {
   } else if (client.webapp) {
     launchWebapp(client.webapp);
   } else {
-    console.error(`Something went wrong, not sure how to open client.`);
+    logger.error(`Something went wrong, not sure how to open client.`);
     process.exit(1);
   }
 };

@@ -20,6 +20,7 @@ import hyprctl from "../utils/hyprctl.js";
 import { getLayoutDefinition } from "./registry.js";
 import { loadConfiguration } from "../utils/config.js";
 import { launchClientApp } from "../utils/launcher.js";
+import logger from "./../utils/logger.js";
 
 const STEP_OPEN = "open";
 const STEP_MOVE_FOCUS = "movefocus";
@@ -36,7 +37,7 @@ const closeWorkspaceClients = async (workspaceId) => {
   const clients = hyprctl.getClientsOnWorkspace(workspaceId);
 
   if (clients.length > 0) {
-    console.log(
+    logger.verbose(
       `Closing ${clients.length} clients on workspace ${workspaceId}`
     );
 
@@ -49,7 +50,7 @@ const closeWorkspaceClients = async (workspaceId) => {
     );
 
     if (!success) {
-      console.error(
+      logger.error(
         `Timed out waiting for windows to close in workspace ${workspaceId}`
       );
     }
@@ -58,7 +59,7 @@ const closeWorkspaceClients = async (workspaceId) => {
 
 const resizeActiveClient = (dimension) => {
   if (!dimension) {
-    console.error(`  Failed to resize active client (missing dimension).`);
+    logger.error(`  Failed to resize active client (missing dimension).`);
     process.exit(1);
   }
 
@@ -96,7 +97,7 @@ const launchApplication = async (client, workspaceId) => {
     const clients = hyprctl.getClientsOnWorkspace(workspaceId);
     return clients.some((client) => {
       if (!initialAddresses.has(client.address)) {
-        console.log(`  -> Client address detected: ${client.address}`);
+        logger.verbose(`  -> Client address detected: ${client.address}`);
         newAddress = client.address;
         return true;
       }
@@ -108,7 +109,7 @@ const launchApplication = async (client, workspaceId) => {
   if (success) {
     return newAddress;
   } else {
-    console.error(`  Failed to detect window in time for the launched app.`);
+    logger.error(`  Failed to detect window in time for the launched app.`);
     process.exit(1);
   }
 };
@@ -117,7 +118,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
   const configuration = loadConfiguration(configurationName);
   const layoutDefinition = getLayoutDefinition(configuration.layout);
 
-  console.log(
+  logger.verbose(
     `Restoring "${configurationName}" configuration to workspace ${workspaceId}.`
   );
 
@@ -127,7 +128,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
   const clientAddresses = {};
 
   for (const step of layoutDefinition.applySequence) {
-    console.log(`Executing step: ${JSON.stringify(step)}`);
+    logger.verbose(`Executing step: ${JSON.stringify(step)}`);
     switch (step.action) {
       case STEP_OPEN:
         let client = configuration.clients[step.client];
@@ -138,7 +139,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
       case STEP_MOVE_FOCUS:
         let clientAddress = clientAddresses[step.client];
         if (!clientAddress) {
-          console.error(`  Failed to move focus to client (missing address).`);
+          logger.error(`  Failed to move focus to client (missing address).`);
           process.exit(1);
         }
         hyprctl.focusWindow(clientAddress);
@@ -154,7 +155,7 @@ const restoreLayout = async (workspaceId, configurationName) => {
         break;
 
       default:
-        console.error(`  Encoutered an unknown action: ${step.action}`);
+        logger.error(`  Encoutered an unknown action: ${step.action}`);
         process.exit(1);
         break;
     }

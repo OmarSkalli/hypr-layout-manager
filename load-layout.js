@@ -1,0 +1,76 @@
+import hyprctl from "./utils/hyprctl.js";
+import { restoreLayout } from "./layout/restore.js";
+import { validateRestoretInputs, isValidInteger } from "./utils/validations.js";
+import { input, select } from "@inquirer/prompts";
+import { getAvailableConfigurations } from "./utils/config.js";
+import logger from "./utils/logger.js";
+
+// Get parameters from command line
+const args = process.argv.slice(2);
+
+// Verbose mode
+if (args.includes("--verbose") || args.includes("-v")) {
+  logger.setVerbose(true);
+}
+
+const HELP_TEXT = `Hyprland Layout Manager
+
+Usage:
+  node load-layout.js [options]
+  node load-layout.js <configuration> <workspaceId> [options]
+
+Arguments (optional):
+  configuration    Name of the configuration file (without .json extension)
+  workspaceId      Target workspace number (1-10)
+
+  If not provided, interactive prompts will guide you through the selection.
+
+Options:
+  -h, --help       Show this help message
+  -v, --verbose    Enable verbose logging
+
+Examples:
+  node load-layout.js                    # Interactive mode
+  node load-layout.js dev 2              # Load 'dev' config to workspace 2
+  node load-layout.js dev 2 --verbose    # With detailed logging
+
+`;
+
+// Show help
+if (args.includes("--help") || args.includes("-h")) {
+  logger.info(HELP_TEXT);
+  process.exit(0);
+}
+
+// Check if hyprctl is available
+if (!hyprctl.isHyprctlAvailable()) {
+  logger.error("hyprctl must be present to use the layout manager.");
+  process.exit(1);
+}
+
+// Get Load layout parameters
+const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
+let configuration = null;
+let workspaceId = null;
+
+if (positionalArgs.length === 2) {
+  configuration = process.argv[2];
+  workspaceId = process.argv[3];
+} else {
+  configuration = await select({
+    message: "Enter layout to load:",
+    choices: getAvailableConfigurations((name) => ({ name, value: name })),
+  });
+
+  workspaceId = await input({
+    message: "Enter target workspace (1-10):",
+    validate: (value) =>
+      isValidInteger(value) && parseInt(value) >= 1 && parseInt(value) <= 10,
+  });
+}
+
+// Validate parameters
+validateRestoretInputs(workspaceId, configuration);
+
+// Restore the layout
+restoreLayout(workspaceId, configuration);

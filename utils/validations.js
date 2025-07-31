@@ -5,6 +5,7 @@ import {
 } from "./config.js";
 import { getLayoutDefinition } from "../layout/registry.js";
 import hyprctl from "./hyprctl.js";
+import logger from "./logger.js";
 
 function isValidInteger(value) {
   return /^\d+$/.test(value);
@@ -23,7 +24,7 @@ function isValidInteger(value) {
 const validateRestoretInputs = (workspaceId, configuration) => {
   // Check if target layout is valid (e.g. number between 1 and 10)
   if (!isValidInteger(workspaceId)) {
-    console.error("Invalid workspace number. It must be between 1 and 10.");
+    logger.error("Invalid workspace number. It must be between 1 and 10.");
     process.exit(1);
   }
 
@@ -33,7 +34,7 @@ const validateRestoretInputs = (workspaceId, configuration) => {
   // until the new layout is complete, then kill the app?
   const currentWorkspaceId = hyprctl.getCurrentWorkspace();
   if (currentWorkspaceId === parseInt(workspaceId)) {
-    console.error(
+    logger.error(
       `It's not currently supported to load a layout in the current workspace.`
     );
     process.exit(1);
@@ -44,10 +45,10 @@ const validateRestoretInputs = (workspaceId, configuration) => {
 
   // Check if the layout exists
   if (!availableConfigurations.includes(configuration)) {
-    console.error(
+    logger.error(
       `Layout "${configuration}" not found in ${CONFIG_DIR_TILDE_PATH}`
     );
-    console.error(
+    logger.error(
       "Available configurations:",
       availableConfigurations.join(", ")
     );
@@ -57,13 +58,13 @@ const validateRestoretInputs = (workspaceId, configuration) => {
   // Load the layout
   const savedConfiguration = loadConfiguration(configuration);
   const layoutDefinition = getLayoutDefinition(savedConfiguration.layout);
-  console.log(
+  logger.verbose(
     `Configuration "${configuration}" loaded from ${CONFIG_DIR_TILDE_PATH}`
   );
 
   // Validate the layout definition exists
   if (!layoutDefinition) {
-    console.error(
+    logger.error(
       `Missing or invalid layout definition: ${savedConfiguration.layout}`
     );
     process.exit(1);
@@ -71,14 +72,14 @@ const validateRestoretInputs = (workspaceId, configuration) => {
 
   // Validate we have the right number of clients, and launch details
   if (!Array.isArray(savedConfiguration.clients)) {
-    console.error(
+    logger.error(
       `Malformated configuration (no clients): ${savedConfiguration.layout}`
     );
     process.exit(1);
   }
 
   if (savedConfiguration.clients.length !== layoutDefinition.clientCount) {
-    console.error(
+    logger.error(
       `Invalid layout configuration (${savedConfiguration.clients.length} clients instead of ${layoutDefinition.clientCount}): ${savedConfiguration.layout}`
     );
     process.exit(1);
@@ -86,7 +87,7 @@ const validateRestoretInputs = (workspaceId, configuration) => {
 
   savedConfiguration.clients.forEach((client, i) => {
     if (!client.cmd && !client.webapp) {
-      console.error(
+      logger.error(
         `Missing launch information for client ${i} (expected 'cmd' or 'webapp' to be defined).`
       );
       process.exit(1);
@@ -96,4 +97,4 @@ const validateRestoretInputs = (workspaceId, configuration) => {
   // TODO: Validate dimensions as well formed (e.g. width, height properties)
 };
 
-export { validateRestoretInputs };
+export { validateRestoretInputs, isValidInteger };

@@ -1,6 +1,7 @@
 // Wrapper around the hyprctl command-line utility to interact with the Hyprland compositor.
 
 import { execSync } from "child_process";
+import logger from "./logger.js";
 
 function executeHyprctl(command) {
   try {
@@ -14,7 +15,7 @@ function executeHyprctl(command) {
     const json = JSON.parse(result);
     return json;
   } catch (error) {
-    console.error(`Error executing hyprctl ${command}:`, error.message);
+    logger.error(`Error executing hyprctl ${command}:`, error.message);
     process.exit(1);
   }
 }
@@ -45,12 +46,12 @@ function getClientsOnWorkspace(workspaceId) {
 }
 
 function switchToWorkspace(workspaceId) {
-  console.log(`Switching to workspace ${workspaceId}...`);
+  logger.verbose(`Switching to workspace ${workspaceId}...`);
   executeHyprctl(`dispatch workspace ${workspaceId}`);
 }
 
 function closeClient(address) {
-  console.log(`  -> Closing client ${address}...`);
+  logger.verbose(`  -> Closing client ${address}...`);
   executeHyprctl(`dispatch closewindow address:${address}`);
 }
 
@@ -91,7 +92,7 @@ function focusWindow(clientAddress) {
 function resizeActiveWindow(dx = 0, dy = 0) {
   dx = Math.trunc(dx);
   dy = Math.trunc(dy);
-  console.log(`  -> Resizing active window: ${dx} ${dy}`);
+  logger.verbose(`  -> Resizing active window: ${dx} ${dy}`);
   executeHyprctl(`dispatch resizeactive ${dx} ${dy}`);
 }
 

@@ -5,12 +5,15 @@
   "license": "MIT",
   "author": "Omar Skalli",
   "type": "module",
-  "main": "index.js",
+  "main": "load-layout.js",
   "scripts": {
-    "run": "node index.js",
+    "load-layout": "node load-layout.js",
     "test": "vitest"
   },
   "devDependencies": {
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.0"
   }
 }

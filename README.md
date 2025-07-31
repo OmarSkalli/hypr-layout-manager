@@ -9,7 +9,7 @@ The manager assumes you are using a dwindle layout. Also, it currently only supp
 ## Usage
 
 ```bash
-node index.js <configuration> <workspaceId>
+node load-layout.js <configuration> <workspaceId>
 ```
 
 - `configuration`: Name of the configuration file (without .json extension)
@@ -18,7 +18,7 @@ node index.js <configuration> <workspaceId>
 Example:
 
 ```bash
-node index.js dev 2
+node load-layout.js dev 2
 ```
 
 ## Configuration
