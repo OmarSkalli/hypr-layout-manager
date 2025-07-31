@@ -13,6 +13,7 @@ const launchApp = (command) => {
 
 const launchWebapp = (url) => {
   logger.verbose(`  -> Opening web application: ${url}`);
+
   const args = [
     "app",
     "--",
@@ -21,13 +22,8 @@ const launchWebapp = (url) => {
     "--ozone-platform=wayland",
     `--app=${url}`,
   ];
-
-  const child = spawn("uwsm", args, {
-    detached: true,
-    stdio: "ignore",
-  });
-
-  child.unref();
+  const command = `uwsm ${args.join(" ")}`;
+  launchApp(command);
 };
 
 const launchClientApp = (client) => {
@@ -36,7 +32,6 @@ const launchClientApp = (client) => {
   } else if (client.webapp) {
     launchWebapp(client.webapp);
   } else {
-    logger.error(`Something went wrong, not sure how to open client.`);
     process.exit(1);
   }
 };

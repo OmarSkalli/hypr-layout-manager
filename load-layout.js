@@ -57,8 +57,8 @@ let configuration = null;
 let workspaceId = null;
 
 if (positionalArgs.length > 0) {
-  configuration = process.argv[2];
-  workspaceId = process.argv[3] || currentWorkspace;
+  configuration = positionalArgs[0];
+  workspaceId = positionalArgs[1] || currentWorkspace;
 } else {
   configuration = await select({
     message: "Enter layout to load:",
