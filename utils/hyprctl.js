@@ -89,10 +89,6 @@ function setFloating(clientAddress) {
   executeHyprctl(`dispatch setfloating address:${clientAddress}`);
 }
 
-function swapfocus() {
-  executeHyprctl(`dispatch cyclenext`);
-}
-
 function focusWindow(clientAddress) {
   executeHyprctl(`dispatch focuswindow address:${clientAddress}`);
 }
@@ -122,7 +118,6 @@ export default {
   getCurrentWorkspace,
   getClientsOnWorkspace,
   focusWindow,
-  swapfocus,
   togglesplit,
   setFloating,
   resizeActiveWindow,
