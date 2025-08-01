@@ -6,6 +6,7 @@ import { validateRestoretInputs, isValidInteger } from "./utils/validations.js";
 import { input, select } from "@inquirer/prompts";
 import { getAvailableConfigurations } from "./utils/config.js";
 import logger from "./utils/logger.js";
+import { LOAD_LAYOUT_HELP_TEXT } from "./utils/app-constants.js";
 
 // Get parameters from command line
 const args = process.argv.slice(2);
@@ -15,33 +16,9 @@ if (args.includes("--verbose") || args.includes("-v")) {
   logger.setVerbose(true);
 }
 
-const HELP_TEXT = `Hyprland Layout Manager
-
-Usage:
-  hyprland-load-layout [options]
-  hyprland-load-layout <configuration> [workspaceId] [options]
-
-Arguments (optional):
-  configuration    Name of the configuration file (without .json extension)
-  workspaceId      Target workspace number (1-10). Defaults to current workspace if not provided.
-
-  If not provided, interactive prompts will guide you through the selection.
-
-Options:
-  -h, --help       Show this help message
-  -v, --verbose    Enable verbose logging
-
-Examples:
-  node load-layout.js                    # Interactive mode
-  node load-layout.js dev                # Load 'dev' config to current workspace
-  node load-layout.js dev 2              # Load 'dev' config to workspace 2
-  node load-layout.js dev 2 --verbose    # With detailed logging
-
-`;
-
 // Show help
 if (args.includes("--help") || args.includes("-h")) {
-  logger.info(HELP_TEXT);
+  logger.info(LOAD_LAYOUT_HELP_TEXT);
   process.exit(0);
 }
 

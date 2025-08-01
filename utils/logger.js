@@ -9,17 +9,18 @@ const setVerbose = (verbose) => {
 };
 
 const info = (message) => {
-  console.log(message);
+  console.log(message || "");
 };
 
 const verbose = (message) => {
   if (isVerbose) {
-    console.log(`${COLOR_YELLOW}[Verbose]${COLOR_RESET} ${message}`);
+    const timestamp = new Date().toLocaleTimeString();
+    console.log(`${COLOR_YELLOW}[${timestamp}]${COLOR_RESET} ${message}`);
   }
 };
 
 const error = (message) => {
-  console.error(`${COLOR_RED}[Error]  ${COLOR_RESET} ${message}`);
+  console.error(`${COLOR_RED}Error:${COLOR_RESET} ${message}`);
 };
 
 export default {

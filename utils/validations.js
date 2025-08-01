@@ -10,6 +10,15 @@ function isValidInteger(value) {
   return /^\d+$/.test(value);
 }
 
+function isValidFilename(value) {
+  return /^[a-zA-Z0-9_][a-zA-Z0-9_-]*$/.test(value);
+}
+
+function isValidPercentage(value, min = 0, max = 1) {
+  const num = parseFloat(value);
+  return !isNaN(num) && num >= min && num <= max;
+}
+
 // TODO:
 //
 // 1) Ideally, don't have `process.exit(1)` all over the place. Instead, have the validator return a list
@@ -84,4 +93,9 @@ const validateRestoretInputs = (workspaceId, configuration) => {
   // TODO: Validate dimensions as well formed (e.g. width, height properties)
 };
 
-export { validateRestoretInputs, isValidInteger };
+export {
+  validateRestoretInputs,
+  isValidInteger,
+  isValidFilename,
+  isValidPercentage,
+};

@@ -11,9 +11,8 @@ export default {
   dimensions: [
     {
       label: "Client A width (%)",
-      value: {
-        width: 0.5,
-      },
+      type: "width",
+      default: 0.5,
     },
   ],
   applySequence: [

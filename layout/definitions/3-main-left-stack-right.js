@@ -11,15 +11,13 @@ export default {
   dimensions: [
     {
       label: "Client A width (%)",
-      value: {
-        width: 0.7,
-      },
+      type: "width",
+      default: 0.7,
     },
     {
       label: "Client B height (%)",
-      value: {
-        height: 0.5,
-      },
+      type: "height",
+      default: 0.5,
     },
   ],
   applySequence: [

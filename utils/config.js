@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import os from "os";
+import logger from "./logger.js";
 
 const CONFIG_DIR = path.join(os.homedir(), ".config", "hypr", "layouts");
 const CONFIG_DIR_TILDE_PATH = CONFIG_DIR.replace(os.homedir(), "~");
@@ -31,4 +32,19 @@ function loadConfiguration(configuration) {
   return JSON.parse(configData);
 }
 
-export { getAvailableConfigurations, loadConfiguration, CONFIG_DIR_TILDE_PATH };
+function saveConfiguration(configuration, json) {
+  ensureLayoutDirectoryExists();
+  const configPath = path.join(CONFIG_DIR, `${configuration}.json`);
+
+  logger.verbose(`Saving configuration to ${configPath}`);
+  fs.writeFileSync(configPath, JSON.stringify(json, null, 2));
+
+  return path.join(CONFIG_DIR_TILDE_PATH, `${configuration}.json`);
+}
+
+export {
+  getAvailableConfigurations,
+  loadConfiguration,
+  saveConfiguration,
+  CONFIG_DIR_TILDE_PATH,
+};
