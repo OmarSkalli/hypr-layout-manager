@@ -18,7 +18,6 @@ export default {
   applySequence: [
     { action: "open", client: 0 },
     { action: "open", client: 1 },
-    { action: "movefocus", client: 0 },
-    { action: "resizewindow", clientConfig: 0 },
+    { action: "resizewindow", dimension: 0, client: 0 },
   ],
 };

@@ -6,10 +6,13 @@
 import { execSync } from "child_process";
 import logger from "./logger.js";
 
-function executeHyprctl(command) {
+function executeHyprctl(command, log = true) {
+  const fullCommand = `hyprctl -j ${command}`;
+  if (log) logger.command(fullCommand);
+
   try {
     // Use -j flag to output JSON
-    const result = execSync(`hyprctl -j ${command}`, { encoding: "utf8" });
+    const result = execSync(fullCommand, { encoding: "utf8" });
 
     // Some actions (e.g. navigate to workspace) only return 'ok'
     if (result.trim() === "ok") return result;
@@ -18,7 +21,7 @@ function executeHyprctl(command) {
     const json = JSON.parse(result);
     return json;
   } catch (error) {
-    logger.error(`Error executing hyprctl ${command}:`);
+    logger.error(`Error executing ${fullCommand}:`);
     logger.error(error);
     process.exit(1);
   }
@@ -39,7 +42,7 @@ function getCurrentWorkspace() {
 }
 
 function getClientsOnWorkspace(workspaceId) {
-  const clients = executeHyprctl("clients");
+  const clients = executeHyprctl("clients", false);
 
   return clients.filter(
     (client) =>
@@ -50,12 +53,10 @@ function getClientsOnWorkspace(workspaceId) {
 }
 
 function switchToWorkspace(workspaceId) {
-  logger.verbose(`Switching to workspace ${workspaceId}...`);
   executeHyprctl(`dispatch workspace ${workspaceId}`);
 }
 
 function closeClient(address) {
-  logger.verbose(`  -> Closing client ${address}...`);
   executeHyprctl(`dispatch closewindow address:${address}`);
 }
 
@@ -81,26 +82,19 @@ function getCurrentWindowDimensions() {
   };
 }
 
-function togglesplit() {
-  executeHyprctl("dispatch togglesplit");
+function togglesplit(address) {
+  executeHyprctl(`dispatch togglesplit address:${address}`);
 }
 
-function setFloating(clientAddress) {
-  executeHyprctl(`dispatch setfloating address:${clientAddress}`);
+function setFloating(address) {
+  executeHyprctl(`dispatch setfloating address:${address}`);
 }
 
-function focusWindow(clientAddress) {
-  executeHyprctl(`dispatch focuswindow address:${clientAddress}`);
+function focusWindow(address) {
+  executeHyprctl(`dispatch focuswindow address:${address}`);
 }
 
-function resizeActiveWindow(dx = 0, dy = 0) {
-  dx = Math.trunc(dx);
-  dy = Math.trunc(dy);
-  logger.verbose(`  -> Resizing active window: ${dx} ${dy}`);
-  executeHyprctl(`dispatch resizeactive ${dx} ${dy}`);
-}
-
-function resizeWindow(address, dimensions) {
+function resizeClient(address, dimensions) {
   executeHyprctl(`dispatch resizeactive ${dimensions} address:${address}`);
 }
 
@@ -129,8 +123,7 @@ export default {
   focusWindow,
   togglesplit,
   setFloating,
-  resizeActiveWindow,
-  resizeWindow,
+  resizeClient,
   centerWindow,
   isDwindleLayout,
 };

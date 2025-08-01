@@ -1,7 +1,16 @@
-import layout_2_colummns from "./definitions/2-columns.js";
-import layout_3_main_left_stack_right from "./definitions/3-main-left-stack-right.js";
+import layout_1_full from "./definitions/1-full.js";
+import layout_2_columns from "./definitions/2-columns.js";
+import layout_2_rows from "./definitions/2-rows.js";
+import layout_3_columns from "./definitions/3-columns.js";
+import layout_3_main_right_stack from "./definitions/3-main-right-stack.js";
 
-const availableLayouts = [layout_2_colummns, layout_3_main_left_stack_right];
+const availableLayouts = [
+  layout_1_full,
+  layout_2_columns,
+  layout_2_rows,
+  layout_3_columns,
+  layout_3_main_right_stack,
+];
 const maxClients = Math.max(
   ...availableLayouts.map((layout) => layout.clientCount)
 );

@@ -1,5 +1,5 @@
 export default {
-  name: "3-main-left-stack-right",
+  name: "3-main-right-stack",
   clientCount: 3,
   ascii: [
     "┌─────────────┬───┐",
@@ -24,10 +24,8 @@ export default {
     { action: "open", client: 0 },
     { action: "open", client: 1 },
     { action: "open", client: 2 },
-    { action: "togglesplit" },
-    { action: "movefocus", client: 1 },
-    { action: "resizewindow", dimension: 0 },
-    { action: "movefocus", client: 2 },
-    { action: "resizewindow", dimension: 1 },
+    { action: "togglesplit", client: 2 },
+    { action: "resizewindow", dimension: 0, client: 0 },
+    { action: "resizewindow", dimension: 1, client: 1 },
   ],
 };

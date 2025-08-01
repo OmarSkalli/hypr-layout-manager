@@ -2,7 +2,13 @@ let isVerbose = false;
 
 const COLOR_RED = "\x1b[31m";
 const COLOR_YELLOW = "\x1b[33m";
+const COLOR_GRAY = "\x1b[38;5;244m";
 const COLOR_RESET = "\x1b[0m";
+
+const timestamp = () => {
+  const timestamp = new Date().toLocaleTimeString();
+  return `${COLOR_YELLOW}[${timestamp}]${COLOR_RESET}`;
+};
 
 const setVerbose = (verbose) => {
   isVerbose = verbose;
@@ -14,8 +20,13 @@ const info = (message) => {
 
 const verbose = (message) => {
   if (isVerbose) {
-    const timestamp = new Date().toLocaleTimeString();
-    console.log(`${COLOR_YELLOW}[${timestamp}]${COLOR_RESET} ${message}`);
+    console.log(`${timestamp()} ${message}`);
+  }
+};
+
+const command = (command) => {
+  if (isVerbose) {
+    console.log(`${timestamp()}   ${COLOR_GRAY} ${command}${COLOR_RESET}`);
   }
 };
 
@@ -27,5 +38,6 @@ export default {
   setVerbose,
   info,
   verbose,
+  command,
   error,
 };

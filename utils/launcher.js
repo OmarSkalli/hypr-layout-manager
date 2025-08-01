@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import logger from "./logger.js";
 
 const launchApp = (command) => {
-  logger.verbose(`  -> Opening application: ${command}`);
+  logger.command(command);
   const child = spawn("sh", ["-c", command], {
     detached: true,
     stdio: "ignore",
@@ -12,8 +12,6 @@ const launchApp = (command) => {
 };
 
 const launchWebapp = (url) => {
-  logger.verbose(`  -> Opening web application: ${url}`);
-
   const args = [
     "app",
     "--",

@@ -38,7 +38,7 @@ const saveLayout = async (configurationName, workspaceId) => {
   const clientsConfig = guessClientConfig(clients);
   logger.verbose(`Guessing client configuration:`);
   clientsConfig.forEach((config) =>
-    logger.verbose(`  -> ${JSON.stringify(config)}`)
+    logger.verbose(`  - ${JSON.stringify(config)}`)
   );
 
   // Fetch layouts that can match # of clients

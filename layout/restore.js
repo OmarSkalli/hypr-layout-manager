@@ -6,13 +6,10 @@
 // We're building a layout using a "layout sequence" composed of the folllowing steps only:
 //
 //    - open an application
-//    - `movefocus` to a client window
 //    - `resizewindow` along the x or y axis
 //    - `togglesplit`
-//    - `swapwindow`
 //
-// It does feel a bit primitive, and brittle if the user is playing with their mouse/keyboard as
-// we're rebuilding the layout. But I couldn't figure out a better way to do it.
+// It does feel a bit primitive, but I couldn't figure out a better way to do it.
 //
 
 import { waitFor } from "../utils/async.js";
@@ -24,15 +21,9 @@ import logger from "./../utils/logger.js";
 import { execSync } from "child_process";
 
 const STEP_OPEN = "open";
-const STEP_MOVE_FOCUS = "movefocus";
 const STEP_RESIZE_WINDOW = "resizewindow";
 const STEP_TOGGLE_SPLIT = "togglesplit";
-const SEQUENCE_STEPS = [
-  STEP_OPEN,
-  STEP_MOVE_FOCUS,
-  STEP_RESIZE_WINDOW,
-  STEP_TOGGLE_SPLIT,
-];
+const SEQUENCE_STEPS = [STEP_OPEN, STEP_RESIZE_WINDOW, STEP_TOGGLE_SPLIT];
 
 const closeWorkspaceClients = async (workspaceId) => {
   const clients = hyprctl.getClientsOnWorkspace(workspaceId);
@@ -58,7 +49,7 @@ const closeWorkspaceClients = async (workspaceId) => {
   }
 };
 
-const resizeActiveClient = (dimension) => {
+const resizeClient = (clientAddress, dimension) => {
   if (!dimension) {
     logger.error(`  Failed to resize active client (missing dimension).`);
     process.exit(1);
@@ -79,7 +70,7 @@ const resizeActiveClient = (dimension) => {
     dy = targetHeight - currentWindow.height;
   }
 
-  hyprctl.resizeActiveWindow(dx, dy);
+  hyprctl.resizeClient(clientAddress, `${Math.trunc(dx)} ${Math.trunc(dy)}`);
 };
 
 const launchApplication = async (client, workspaceId) => {
@@ -98,7 +89,7 @@ const launchApplication = async (client, workspaceId) => {
     const clients = hyprctl.getClientsOnWorkspace(workspaceId);
     return clients.some((client) => {
       if (!initialAddresses.has(client.address)) {
-        logger.verbose(`  -> Client address detected: ${client.address}`);
+        logger.verbose(`Client address detected: ${client.address}`);
         newAddress = client.address;
         return true;
       }
@@ -126,8 +117,9 @@ function getTerminalClient(workspaceId) {
     if (clientPids.has(pid)) {
       return workspaceClients.find((client) => parseInt(client.pid) === pid);
     }
-
-    const result = execSync(`ps -o ppid= -p ${pid}`, { encoding: "utf8" });
+    const command = `ps -o ppid= -p ${pid}`;
+    logger.command(command);
+    const result = execSync(command, { encoding: "utf8" });
     pid = parseInt(result.trim());
   }
   return null;
@@ -142,7 +134,7 @@ function resizeAndFloatTerminal(terminalAddress) {
 
   logger.verbose(`Resizing and centering terminal: ${width} x ${height}`);
 
-  hyprctl.resizeWindow(terminalAddress, `exact ${width} ${height}`);
+  hyprctl.resizeClient(terminalAddress, `exact ${width} ${height}`);
   hyprctl.centerWindow(terminalAddress);
 }
 
@@ -169,12 +161,14 @@ const restoreLayout = async (workspaceId, configurationName) => {
     hyprctl.switchToWorkspace(workspaceId);
   }
 
-  closeWorkspaceClients(workspaceId);
+  await closeWorkspaceClients(workspaceId);
 
   const clientAddresses = {};
 
   for (const step of layoutDefinition.applySequence) {
     logger.verbose(`Executing step: ${JSON.stringify(step)}`);
+    let clientAddress = clientAddresses[step.client];
+
     switch (step.action) {
       case STEP_OPEN: {
         let client = configuration.clients[step.client];
@@ -183,24 +177,14 @@ const restoreLayout = async (workspaceId, configurationName) => {
         break;
       }
 
-      case STEP_MOVE_FOCUS: {
-        let clientAddress = clientAddresses[step.client];
-        if (!clientAddress) {
-          logger.error(`  Failed to move focus to client (missing address).`);
-          process.exit(1);
-        }
-        hyprctl.focusWindow(clientAddress);
-        break;
-      }
-
       case STEP_RESIZE_WINDOW: {
         const dimension = configuration.dimensions[step.dimension];
-        resizeActiveClient(dimension);
+        resizeClient(clientAddress, dimension);
         break;
       }
 
       case STEP_TOGGLE_SPLIT:
-        hyprctl.togglesplit();
+        hyprctl.togglesplit(clientAddress);
         break;
 
       default:
