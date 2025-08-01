@@ -25,6 +25,6 @@ export default {
     { action: "open", client: 1 },
     { action: "open", client: 2 },
     { action: "resizewindow", dimension: 0, client: 0 },
-    { action: "resizewindow", dimension: 1, client: 0 },
+    { action: "resizewindow", dimension: 1, client: 1 },
   ],
 };

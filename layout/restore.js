@@ -12,13 +12,13 @@
 // It does feel a bit primitive, but I couldn't figure out a better way to do it.
 //
 
+import { execSync } from "child_process";
 import { waitFor } from "../utils/async.js";
-import hyprctl from "../utils/hyprctl.js";
-import { getLayoutDefinition } from "./registry.js";
 import { loadConfiguration } from "../utils/config.js";
+import hyprctl from "../utils/hyprctl.js";
 import { launchClientApp } from "../utils/launcher.js";
 import logger from "./../utils/logger.js";
-import { execSync } from "child_process";
+import { getLayoutDefinition } from "./registry.js";
 
 const STEP_OPEN = "open";
 const STEP_RESIZE_WINDOW = "resizewindow";
@@ -56,18 +56,18 @@ const resizeClient = (clientAddress, dimension) => {
   }
 
   const monitorDimensions = hyprctl.getMonitorDimensions();
-  const currentWindow = hyprctl.getCurrentWindowDimensions();
+  const client = hyprctl.getClientDimensions(clientAddress);
   let dx = 0;
   let dy = 0;
 
   if (dimension.width) {
     const targetWidth = dimension.width * monitorDimensions.width;
-    dx = targetWidth - currentWindow.width;
+    dx = targetWidth - client.width;
   }
 
   if (dimension.height) {
     const targetHeight = dimension.height * monitorDimensions.height;
-    dy = targetHeight - currentWindow.height;
+    dy = targetHeight - client.height;
   }
 
   hyprctl.resizeClient(clientAddress, `${Math.trunc(dx)} ${Math.trunc(dy)}`);
@@ -199,4 +199,4 @@ const restoreLayout = async (workspaceId, configurationName) => {
   }
 };
 
-export { SEQUENCE_STEPS, restoreLayout };
+export { restoreLayout, SEQUENCE_STEPS };

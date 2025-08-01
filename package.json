@@ -7,6 +7,7 @@
   "type": "module",
   "main": "load-layout.js",
   "bin": {
+    "hyprland-save-layout": "./save-layout.js",
     "hyprland-load-layout": "./load-layout.js"
   },
   "scripts": {

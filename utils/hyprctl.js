@@ -7,22 +7,29 @@ import { execSync } from "child_process";
 import logger from "./logger.js";
 
 function executeHyprctl(command, log = true) {
-  const fullCommand = `hyprctl -j ${command}`;
+  const fullCommand = `hyprctl -j ${command}`; // -j flag for JSON output
   if (log) logger.command(fullCommand);
 
+  let result;
   try {
-    // Use -j flag to output JSON
-    const result = execSync(fullCommand, { encoding: "utf8" });
-
-    // Some actions (e.g. navigate to workspace) only return 'ok'
-    if (result.trim() === "ok") return result;
-
-    // Parse all other responses
-    const json = JSON.parse(result);
-    return json;
+    result = execSync(fullCommand, { encoding: "utf8" });
   } catch (error) {
     logger.error(`Error executing ${fullCommand}:`);
     logger.error(error);
+    process.exit(1);
+  }
+
+  // Some actions (e.g. navigate to workspace) only return 'ok'
+  if (result.trim() === "ok") return result;
+
+  // Parse all other responses
+  try {
+    const json = JSON.parse(result);
+    return json;
+  } catch (jsonError) {
+    logger.error(`JSON parsing error for command ${fullCommand}:`);
+    logger.error(`Raw output: ${result}`);
+    logger.error(jsonError);
     process.exit(1);
   }
 }
@@ -72,13 +79,19 @@ function getMonitorDimensions() {
   };
 }
 
-function getCurrentWindowDimensions() {
-  const window = executeHyprctl("activewindow");
+function getClientDimensions(address) {
+  const client = executeHyprctl(`clients`, false).find(
+    (client) => client.address === address
+  );
+
+  if (!client) {
+    logger.error(`Failed to find client address:${address}`);
+  }
   return {
-    width: window.size[0],
-    height: window.size[1],
-    x: window.at[0],
-    y: window.at[1],
+    width: client.size[0],
+    height: client.size[1],
+    x: client.at[0],
+    y: client.at[1],
   };
 }
 
@@ -95,7 +108,7 @@ function focusWindow(address) {
 }
 
 function resizeClient(address, dimensions) {
-  executeHyprctl(`dispatch resizeactive ${dimensions} address:${address}`);
+  executeHyprctl(`dispatch resizewindowpixel ${dimensions},address:${address}`);
 }
 
 function centerWindow(address) {
@@ -112,18 +125,18 @@ function isDwindleLayout() {
 }
 
 export default {
+  centerWindow,
   closeClient,
   executeHyprctl,
-  switchToWorkspace,
-  getMonitorDimensions,
-  getCurrentWindowDimensions,
-  isHyprctlAvailable,
-  getCurrentWorkspace,
+  getClientDimensions,
   getClientsOnWorkspace,
-  focusWindow,
-  togglesplit,
-  setFloating,
-  resizeClient,
-  centerWindow,
+  getCurrentWorkspace,
+  getMonitorDimensions,
   isDwindleLayout,
+  isHyprctlAvailable,
+  focusWindow,
+  resizeClient,
+  setFloating,
+  switchToWorkspace,
+  togglesplit,
 };
