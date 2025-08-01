@@ -23,7 +23,13 @@ import { getLayoutDefinition } from "./registry.js";
 const STEP_OPEN = "open";
 const STEP_RESIZE_WINDOW = "resizewindow";
 const STEP_TOGGLE_SPLIT = "togglesplit";
-const SEQUENCE_STEPS = [STEP_OPEN, STEP_RESIZE_WINDOW, STEP_TOGGLE_SPLIT];
+const STEP_FOCUS_WINDOW = "focuswindow";
+const SEQUENCE_STEPS = [
+  STEP_OPEN,
+  STEP_RESIZE_WINDOW,
+  STEP_TOGGLE_SPLIT,
+  STEP_FOCUS_WINDOW,
+];
 
 const closeWorkspaceClients = async (workspaceId) => {
   const clients = hyprctl.getClientsOnWorkspace(workspaceId);
@@ -178,13 +184,19 @@ const restoreLayout = async (workspaceId, configurationName) => {
       }
 
       case STEP_RESIZE_WINDOW: {
-        const dimension = configuration.dimensions[step.dimension];
+        // Dimension can either be a user defined dimension or a pre-defined step value.
+        const dimension =
+          step.value || configuration.dimensions[step.dimension];
         resizeClient(clientAddress, dimension);
         break;
       }
 
       case STEP_TOGGLE_SPLIT:
         hyprctl.togglesplit(clientAddress);
+        break;
+
+      case STEP_FOCUS_WINDOW:
+        hyprctl.focusWindow(clientAddress);
         break;
 
       default:

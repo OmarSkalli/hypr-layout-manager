@@ -108,7 +108,9 @@ function focusWindow(address) {
 }
 
 function resizeClient(address, dimensions) {
-  executeHyprctl(`dispatch resizewindowpixel ${dimensions},address:${address}`);
+  executeHyprctl(
+    `dispatch resizewindowpixel ${dimensions}, address:${address}`
+  );
 }
 
 function centerWindow(address) {

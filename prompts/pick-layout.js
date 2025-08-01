@@ -35,12 +35,20 @@ const prepareGridLayout = (layouts) => {
   let row = 0;
   for (let i = 0; i < layouts.length; i += grid.columns) {
     const rowLayouts = layouts.slice(i, i + grid.columns);
+    const totalLines = Math.max(
+      ...rowLayouts.map((layout) => layout.ascii.length + 1) // title line
+    );
+
     grid.rows[row] = rowLayouts.map((layout) => {
       const lines = [layout.name, ...layout.ascii];
+      const missingLines = totalLines - lines.length;
+      for (let j = 0; j < missingLines; j++) lines.push("");
+
       return lines.map((line) =>
         line.padEnd(grid.cellSize.width + PADDING_RIGHT)
       );
     });
+
     row++;
   }
 
