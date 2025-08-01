@@ -51,12 +51,19 @@ function getCurrentWorkspace() {
 function getClientsOnWorkspace(workspaceId) {
   const clients = executeHyprctl("clients", false);
 
-  return clients.filter(
-    (client) =>
-      client.workspace.id === parseInt(workspaceId) &&
-      !client.floating &&
-      client.mapped
-  );
+  return clients
+    .filter(
+      (client) =>
+        client.workspace.id === parseInt(workspaceId) &&
+        !client.floating &&
+        client.mapped
+    )
+    .sort((a, b) => {
+      if (a.at[0] !== b.at[0]) {
+        return a.at[0] - b.at[0];
+      }
+      return a.at[1] - b.at[1];
+    });
 }
 
 function switchToWorkspace(workspaceId) {

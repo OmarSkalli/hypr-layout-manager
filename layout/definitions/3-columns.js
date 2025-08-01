@@ -1,6 +1,9 @@
+const name = "3-columns";
+const clientCount = 3;
+
 export default {
-  name: "3-columns",
-  clientCount: 3,
+  name,
+  clientCount,
   ascii: [
     "┌─────┬─────┬─────┐",
     "│     │     │     │",

@@ -20,7 +20,13 @@ const info = (message) => {
 
 const verbose = (message) => {
   if (isVerbose) {
-    console.log(`${timestamp()} ${message}`);
+    if (typeof message === "object" && message !== null) {
+      JSON.stringify(message, null, 2)
+        .split("\n")
+        .forEach((line) => verbose(line));
+    } else {
+      console.log(`${timestamp()} ${message}`);
+    }
   }
 };
 

@@ -1,6 +1,9 @@
+const name = "4-quadrants";
+const clientCount = 4;
+
 export default {
-  name: "4-quadrants",
-  clientCount: 4,
+  name,
+  clientCount,
   ascii: [
     "┌────────────┬──────┐",
     "│    A       │  B   │",

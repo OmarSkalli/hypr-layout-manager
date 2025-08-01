@@ -1,6 +1,9 @@
+const name = "3-main-right-stack";
+const clientCount = 3;
+
 export default {
-  name: "3-main-right-stack",
-  clientCount: 3,
+  name,
+  clientCount,
   ascii: [
     "┌─────────────┬───┐",
     "│             │ B │",

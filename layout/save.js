@@ -6,17 +6,20 @@ import assignLayoutClients from "../prompts/assign-clients.js";
 import setDimensions from "../prompts/set-dimensions.js";
 import { saveConfiguration } from "../utils/config.js";
 import { LOAD_EXECUTABLE } from "../utils/app-constants.js";
+
 const guessClientConfig = (clients) => {
-  return clients.map((client) => {
-    const urlMatch = client.initialClass.match(
-      /^chrome-(.*)-(default|Default)$/
-    );
-    if (urlMatch) {
-      const url = urlMatch[1].replace(/__/g, "/").replace(/_/g, "/");
-      return { webapp: `https://${url}` };
-    }
-    return { cmd: client.initialClass.toLowerCase() };
-  });
+  return Object.fromEntries(
+    clients.map((client) => {
+      const urlMatch = client.initialClass.match(
+        /^chrome-(.*)-(default|Default)$/
+      );
+      if (urlMatch) {
+        const url = urlMatch[1].replace(/__/g, "/").replace(/_/g, "/");
+        return [client.address, { webapp: `https://${url}` }];
+      }
+      return [client.address, { cmd: client.initialClass.toLowerCase() }];
+    })
+  );
 };
 
 const saveLayout = async (configurationName, workspaceId) => {
@@ -36,10 +39,8 @@ const saveLayout = async (configurationName, workspaceId) => {
 
   // Detect client config (e.g. cmd vs. webapp)
   const clientsConfig = guessClientConfig(clients);
-  logger.verbose(`Guessing client configuration:`);
-  clientsConfig.forEach((config) =>
-    logger.verbose(`  - ${JSON.stringify(config)}`)
-  );
+  logger.verbose(`Clients config:`);
+  logger.verbose(clientsConfig);
 
   // Fetch layouts that can match # of clients
   const availableLayouts = getLayoutsForClientCount(clientsCount);
@@ -52,21 +53,47 @@ const saveLayout = async (configurationName, workspaceId) => {
     process.exit(1);
   }
 
-  // Ask user to pick a layout from available layouts
-  const layout = await pickLayout(availableLayouts);
+  // Attempt to auto-detect layout
+  let configuration = null;
 
-  // Ask user to map clients to letters
-  const sortedClients = await assignLayoutClients(layout, clientsConfig);
+  availableLayouts.find((layout) => {
+    if (layout.autoDetectConfiguration) {
+      configuration = layout.autoDetectConfiguration(clients, clientsConfig);
+    }
 
-  // Ask user to set dimensions
-  const dimensions = await setDimensions(layout);
+    return configuration !== null;
+  });
 
-  // Save configuration
-  const configuration = {
-    layout: layout.name,
-    clients: sortedClients,
-    dimensions,
-  };
+  if (!configuration) {
+    // Ask user to pick a layout from available layouts
+    const layout = await pickLayout(availableLayouts);
+
+    // Ask user to map clients to letters
+    const sortedClients = await assignLayoutClients(
+      layout,
+      Object.values(clientsConfig)
+    );
+
+    // Ask user to set dimensions
+    const dimensions = await setDimensions(layout);
+
+    // Save configuration
+    configuration = {
+      layout: layout.name,
+      clients: sortedClients,
+      dimensions,
+    };
+  } else {
+    logger.info("");
+    logger.info(
+      availableLayouts
+        .find((layout) => layout.name === configuration.layout)
+        .ascii.join("\n")
+    );
+  }
+
+  logger.verbose("Layout JSON object:");
+  logger.verbose(configuration);
 
   const configPath = saveConfiguration(configurationName, configuration);
   logger.info(`\nLayout successfully created: ${configPath}\n`);

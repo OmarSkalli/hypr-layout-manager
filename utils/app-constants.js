@@ -6,7 +6,7 @@ Usage: ${LOAD_EXECUTABLE} [options]
        ${LOAD_EXECUTABLE} <configuration> [workspaceId] [options]
 
 Arguments (optional):
-  configuration    Name of the configuration file (without .json extension)
+  configuration    Name of the layout configuration to load
   workspaceId      Target workspace number (1-10). Defaults to current workspace if not provided.
 
   If not provided, interactive prompts will guide you through the selection.
@@ -24,7 +24,11 @@ Examples:
 
 const SAVE_LAYOUT_HELP_TEXT = `
 Usage: ${SAVE_EXECUTABLE} [options]
+       ${SAVE_EXECUTABLE} <name> [options]
 
+Arguments (optional):
+  name             Name of the layout configuration.
+ 
 Options:
   -h, --help       Show this help message
   -v, --verbose    Enable verbose logging

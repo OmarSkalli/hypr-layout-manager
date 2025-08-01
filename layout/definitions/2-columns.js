@@ -1,6 +1,9 @@
+const name = "2-columns";
+const clientCount = 2;
+
 export default {
-  name: "2-columns",
-  clientCount: 2,
+  name,
+  clientCount,
   ascii: [
     "┌────────┬────────┐",
     "│        │        │",

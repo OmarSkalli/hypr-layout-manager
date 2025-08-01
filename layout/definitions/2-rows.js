@@ -1,6 +1,9 @@
+const name = "2-rows";
+const clientCount = 2;
+
 export default {
-  name: "2-rows",
-  clientCount: 2,
+  name,
+  clientCount,
   ascii: [
     "┌─────────────────┐",
     "│        A        │",
