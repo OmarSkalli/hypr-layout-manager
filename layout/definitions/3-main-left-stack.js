@@ -1,3 +1,5 @@
+import { autoDetectMixedLayout, sortClientsXY } from "../detectionHelpers.js";
+
 const name = "3-main-left-stack";
 const clientCount = 3;
 
@@ -32,4 +34,31 @@ export default {
     { action: "resizewindow", dimension: 0, client: 2 },
     { action: "resizewindow", dimension: 1, client: 1 },
   ],
+  autoDetectConfiguration: (clients, clientsConfig, monitorDimensions) => {
+    sortClientsXY(clients);
+
+    return autoDetectMixedLayout(
+      name,
+      clientCount,
+      clients,
+      clientsConfig,
+      monitorDimensions,
+      [
+        // Because client A is on the right side, yet `clients` is sorted
+        // by X then Y, we have this odd looking setup where we detect
+        // the end (client 2 -> A) then the start (client 0, 1 -> B, C)
+
+        {
+          orientation: "horizontal",
+          clientsIndex: [2],
+          includeLastDimension: true,
+        },
+        {
+          orientation: "vertical",
+          clientsIndex: [0, 1],
+          includeLastDimension: false,
+        },
+      ]
+    );
+  },
 };

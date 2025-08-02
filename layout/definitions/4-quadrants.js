@@ -1,3 +1,5 @@
+import { autoDetectMixedLayout, sortClientsYX } from "../detectionHelpers.js";
+
 const name = "4-quadrants";
 const clientCount = 4;
 
@@ -39,4 +41,28 @@ export default {
     { action: "resizewindow", dimension: 1, client: 0 },
     { action: "resizewindow", dimension: 2, client: 2 },
   ],
+  autoDetectConfiguration: (clients, clientsConfig, monitorDimensions) => {
+    sortClientsYX(clients);
+
+    return autoDetectMixedLayout(
+      name,
+      clientCount,
+      clients,
+      clientsConfig,
+      monitorDimensions,
+      [
+        {
+          orientation: "horizontal",
+          clientsIndex: [0, 1],
+          includeHeightAndWidth: true,
+          includeLastDimension: false,
+        },
+        {
+          orientation: "horizontal",
+          clientsIndex: [2, 3],
+          includeLastDimension: false,
+        },
+      ]
+    );
+  },
 };

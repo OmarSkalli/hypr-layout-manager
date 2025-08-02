@@ -1,3 +1,5 @@
+import { autoDetectMixedLayout, sortClientsXY } from "../detectionHelpers.js";
+
 const name = "3-main-right-stack";
 const clientCount = 3;
 
@@ -31,4 +33,27 @@ export default {
     { action: "resizewindow", dimension: 0, client: 0 },
     { action: "resizewindow", dimension: 1, client: 1 },
   ],
+  autoDetectConfiguration: (clients, clientsConfig, monitorDimensions) => {
+    sortClientsXY(clients);
+
+    return autoDetectMixedLayout(
+      name,
+      clientCount,
+      clients,
+      clientsConfig,
+      monitorDimensions,
+      [
+        {
+          orientation: "horizontal",
+          clientsIndex: [0],
+          includeLastDimension: true,
+        },
+        {
+          orientation: "vertical",
+          clientsIndex: [1, 2],
+          includeLastDimension: false,
+        },
+      ]
+    );
+  },
 };
