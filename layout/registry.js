@@ -9,6 +9,8 @@ import layout_4_columns from "./definitions/4-columns.js";
 import layout_4_main_left_right_stack from "./definitions/4-main-left-right-stack.js";
 import layout_4_main_right_stack from "./definitions/4-main-right-stack.js";
 import layout_4_quadrants from "./definitions/4-quadrants.js";
+import layout_5_columns from "./definitions/5-columns.js";
+import layout_5_split_main_split from "./definitions/5-split-main-split.js";
 
 const availableLayouts = [
   layout_1_full,
@@ -22,6 +24,8 @@ const availableLayouts = [
   layout_4_main_left_right_stack,
   layout_4_main_right_stack,
   layout_4_quadrants,
+  layout_5_columns,
+  layout_5_split_main_split,
 ];
 const maxClients = Math.max(
   ...availableLayouts.map((layout) => layout.clientCount)

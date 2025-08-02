@@ -122,6 +122,19 @@ Configuration files are stored in `~/.config/hypr/layouts/` and can be edited fo
 - `4-main-right-stack`: Main window on left, stack on right
 - `4-quadrants`: Four windows in quadrant arrangement
 
+### 5 Clients
+
+```
+┌──┬──┬──┬──┬──┐    ┌───┬─────────┬───┐
+│  │  │  │  │  │    │ A │         │ D │
+│A │B │C │D │E │    ├───┤    C    ├───┤
+│  │  │  │  │  │    │ B │         │ E │
+└──┴──┴──┴──┴──┘    └───┴─────────┴───┘
+```
+
+- `5-columns`: Five equal columns
+- `5-split-main-split`: Main window in center with vertical splits on both sides
+
 ## Requirements
 
 - Hyprland window manager
