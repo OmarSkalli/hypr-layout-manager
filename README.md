@@ -43,7 +43,7 @@ hyprland-load-layout [configuration] [workspaceId]
 - `configuration`: Name of the configuration file (without .json extension)
 - `workspaceId` (optional): Target workspace number (1-10). Defaults to current workspace if not provided.
 
-If no params are provided, interactive prompts will guide you through the selection.
+If no params are provided, interactive prompts will guide you through the selection. Loading a layout will close all applications in the workspace, before re-opening everything.
 
 Example:
 
