@@ -12,6 +12,7 @@
   },
   "scripts": {
     "load-layout": "node load-layout.js",
+    "save-layout": "node save-layout.js",
     "test": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

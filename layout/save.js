@@ -55,10 +55,17 @@ const saveLayout = async (configurationName, workspaceId) => {
 
   // Attempt to auto-detect layout
   let configuration = null;
+  const monitorDimensions = hyprctl.getMonitorDimensions();
 
   availableLayouts.find((layout) => {
     if (layout.autoDetectConfiguration) {
-      configuration = layout.autoDetectConfiguration(clients, clientsConfig);
+      logger.verbose(`Auto detection attempt: ${layout.name}`);
+
+      configuration = layout.autoDetectConfiguration(
+        clients,
+        clientsConfig,
+        monitorDimensions
+      );
     }
 
     return configuration !== null;

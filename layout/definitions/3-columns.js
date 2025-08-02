@@ -1,3 +1,5 @@
+import { autoDetectHorizontalLayout } from "../detectionHelpers.js";
+
 const name = "3-columns";
 const clientCount = 3;
 
@@ -30,4 +32,13 @@ export default {
     { action: "resizewindow", dimension: 0, client: 0 },
     { action: "resizewindow", dimension: 1, client: 1 },
   ],
+  autoDetectConfiguration: (clients, clientsConfig, monitorDimensions) => {
+    return autoDetectHorizontalLayout(
+      name,
+      clientCount,
+      clients,
+      clientsConfig,
+      monitorDimensions
+    );
+  },
 };

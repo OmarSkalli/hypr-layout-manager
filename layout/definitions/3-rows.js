@@ -1,3 +1,5 @@
+import { autoDetectVerticalLayout } from "../detectionHelpers.js";
+
 const name = "3-rows";
 const clientCount = 3;
 
@@ -34,4 +36,13 @@ export default {
     { action: "resizewindow", dimension: 0, client: 0 },
     { action: "resizewindow", dimension: 1, client: 1 },
   ],
+  autoDetectConfiguration: (clients, clientsConfig, monitorDimensions) => {
+    return autoDetectVerticalLayout(
+      name,
+      clientCount,
+      clients,
+      clientsConfig,
+      monitorDimensions
+    );
+  },
 };

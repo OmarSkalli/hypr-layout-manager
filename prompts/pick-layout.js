@@ -74,7 +74,7 @@ const printGrid = (grid) => {
 };
 
 const pickLayout = async (availableLayouts) => {
-  logger.info("\nAvailable layouts:\n");
+  logger.info("\nSupported layouts:\n");
 
   const grid = prepareGridLayout(availableLayouts);
   printGrid(grid);
