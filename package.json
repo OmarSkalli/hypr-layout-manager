@@ -4,6 +4,10 @@
   "description": "Simple layout manager for hyprland.",
   "license": "MIT",
   "author": "Omar Skalli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OmarSkalli/hypr-layout-manager.git"
+  },
   "type": "module",
   "main": "load-layout.js",
   "bin": {
