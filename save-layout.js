@@ -7,6 +7,7 @@ import { getAvailableConfigurations } from "./utils/config.js";
 import { saveLayout } from "./layout/save.js";
 import logger from "./utils/logger.js";
 import { SAVE_LAYOUT_HELP_TEXT } from "./utils/app-constants.js";
+import { getVersion } from "./utils/version.js";
 
 // Get parameters from command line
 const args = process.argv.slice(2);
@@ -15,6 +16,12 @@ const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
 // Verbose mode
 if (args.includes("--verbose") || args.includes("-v")) {
   logger.setVerbose(true);
+}
+
+// Show version
+if (args.includes("--version") || args.includes("-V")) {
+  console.log(getVersion());
+  process.exit(0);
 }
 
 // Show help
