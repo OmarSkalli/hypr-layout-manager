@@ -7,6 +7,7 @@ import { input, select } from "@inquirer/prompts";
 import { getAvailableConfigurations } from "./utils/config.js";
 import logger from "./utils/logger.js";
 import { LOAD_LAYOUT_HELP_TEXT } from "./utils/app-constants.js";
+import { getVersion } from "./utils/version.js";
 
 // Get parameters from command line
 const args = process.argv.slice(2);
@@ -14,6 +15,12 @@ const args = process.argv.slice(2);
 // Verbose mode
 if (args.includes("--verbose") || args.includes("-v")) {
   logger.setVerbose(true);
+}
+
+// Show version
+if (args.includes("--version") || args.includes("-V")) {
+  console.log(getVersion());
+  process.exit(0);
 }
 
 // Show help

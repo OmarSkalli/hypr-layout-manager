@@ -24,6 +24,9 @@ This is a Hyprland layout manager that allows users to save and restore window l
 
 - `hyprland-load-layout [configuration] [workspaceId]` - Load a saved layout
 - `hyprland-save-layout [configurationName]` - Save current layout
+- `--version` or `-V` - Show version number (available on both commands)
+- `--help` or `-h` - Show help text (available on both commands)
+- `--verbose` or `-v` - Enable verbose logging (available on both commands)
 
 ## Architecture
 
